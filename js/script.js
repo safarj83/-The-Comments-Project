@@ -24,6 +24,7 @@ const addButton = document.getElementById('addButton');
 const errorMessage = document.getElementById('errorMessage');
 
 let nextId = 3;
+let isFirstValidation = true;
 
 function getCurrentDate() {
   const now = new Date();
@@ -127,15 +128,26 @@ commentsList.addEventListener('click', function (e) {
   const comment = commentsData.find(c => c.id === commentId);
   if (!comment) return;
 
-  nameInput.value = comment.name;
-  textInput.value = '> ' + comment.text;
+  // ✅ Исправлено: автор цитаты добавляется в текст комментария
+  textInput.value = '> ' + comment.name + ': ' + comment.text;
   textInput.focus();
+
+  // ✅ Не очищаем поле имени, чтобы пользователь мог указать свое имя
+  // nameInput.value = comment.name; // Убрано!
+
   validateFields();
 });
 
 function validateFields() {
   const name = nameInput.value.trim();
   const text = textInput.value.trim();
+
+  // ✅ Не показываем ошибку при первом запуске
+  if (isFirstValidation) {
+    isFirstValidation = false;
+    addButton.disabled = true;
+    return;
+  }
 
   nameInput.classList.remove('error');
   textInput.classList.remove('error');
@@ -208,4 +220,7 @@ textInput.addEventListener('keydown', function (e) {
 });
 
 renderComments();
+
+// ✅ Инициализация без показа ошибок
+isFirstValidation = true;
 validateFields();
