@@ -1,6 +1,5 @@
-import { commentsData, nextId, incrementId } from './data.js';
+import { commentsData, incrementId } from './data.js';
 import { renderComments } from './render.js';
-import { sanitizeHTML } from './sanitize.js';
 import { getCurrentDate } from './utils.js';
 
 const commentsList = document.getElementById('commentsList');
@@ -43,8 +42,9 @@ function validateFields() {
 }
 
 function addComment() {
-  const name = sanitizeHTML(nameInput.value.trim());
-  const text = sanitizeHTML(textInput.value.trim());
+  // ✅ Убрали sanitizeHTML — теперь сохраняем как есть
+  const name = nameInput.value.trim();
+  const text = textInput.value.trim();
 
   if (!name || !text) {
     validateFields();
@@ -73,7 +73,6 @@ function addComment() {
 }
 
 export function initEvents() {
-  // Клик по комментариям (лайк и цитирование)
   commentsList.addEventListener('click', (e) => {
     const likeButton = e.target.closest('.like-button');
     if (likeButton) {
@@ -92,19 +91,16 @@ export function initEvents() {
     const comment = commentsData.find((c) => c.id === commentId);
     if (!comment) return;
 
+    // ✅ Теперь comment.text — чистый текст, без лишних замен
     textInput.value = `> ${comment.name}: ${comment.text}`;
     textInput.focus();
     validateFields();
   });
 
-  // Валидация при вводе
   nameInput.addEventListener('input', validateFields);
   textInput.addEventListener('input', validateFields);
-
-  // Добавление по кнопке
   addButton.addEventListener('click', addComment);
 
-  // Клавиатурные сокращения
   nameInput.addEventListener('keydown', (e) => {
     if (e.key === 'Enter') {
       e.preventDefault();
@@ -119,7 +115,6 @@ export function initEvents() {
     }
   });
 
-  // Первоначальная валидация
   isFirstValidation = true;
   validateFields();
 }
