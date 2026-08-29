@@ -1,6 +1,7 @@
-import { commentsData, incrementId } from './data.js';
+import { commentsData, incrementId, loadComments } from './data.js';
 import { renderComments } from './render.js';
 import { getCurrentDate } from './utils.js';
+import { addComment as addCommentAPI } from './api.js';
 
 const commentsList = document.getElementById('commentsList');
 const nameInput = document.getElementById('nameInput');
@@ -26,14 +27,15 @@ function validateFields() {
   let isValid = true;
   let errorMsg = '';
 
-  if (!name) {
+  // Проверяем не только пустоту, но и длину (минимум 3 символа)
+  if (!name || name.length < 3) {
     nameInput.classList.add('error');
     isValid = false;
-    errorMsg = 'Пожалуйста, укажите ваше имя';
-  } else if (!text) {
+    errorMsg = 'Имя должно содержать хотя бы 3 символа';
+  } else if (!text || text.length < 3) {
     textInput.classList.add('error');
     isValid = false;
-    errorMsg = 'Пожалуйста, введите текст комментария';
+    errorMsg = 'Текст должен содержать хотя бы 3 символа';
   }
 
   errorMessage.textContent = errorMsg;
@@ -42,34 +44,38 @@ function validateFields() {
 }
 
 function addComment() {
-  // ✅ Убрали sanitizeHTML — теперь сохраняем как есть
   const name = nameInput.value.trim();
   const text = textInput.value.trim();
 
-  if (!name || !text) {
+  // Добавляем проверку длины здесь тоже, чтобы вообще не отправлять запрос
+  if (!name || name.length < 3 || !text || text.length < 3) {
     validateFields();
     return;
   }
 
-  const newComment = {
-    id: incrementId(),
-    name,
-    date: getCurrentDate(),
-    text,
-    likes: 0,
-    isLiked: false,
-  };
-
-  commentsData.push(newComment);
-  renderComments();
-
-  nameInput.value = '';
-  textInput.value = '';
+  addButton.textContent = 'Отправка...';
   addButton.disabled = true;
-  errorMessage.textContent = '';
-  nameInput.classList.remove('error');
-  textInput.classList.remove('error');
-  nameInput.focus();
+
+  addCommentAPI({ name, text })
+    .then(() => loadComments())
+    .then(() => {
+      renderComments();
+      nameInput.value = '';
+      textInput.value = '';
+      errorMessage.textContent = '';
+      nameInput.classList.remove('error');
+      textInput.classList.remove('error');
+      nameInput.focus();
+    })
+    .catch((error) => {
+      // Тут отобразится сообщение с сервера (например, "имя должно содержать хотя бы 3 символа")
+      errorMessage.textContent = error.message || 'Ошибка при добавлении комментария';
+    })
+    .finally(() => {
+      addButton.textContent = 'Написать';
+      addButton.disabled = false;
+      validateFields();
+    });
 }
 
 export function initEvents() {
@@ -91,7 +97,6 @@ export function initEvents() {
     const comment = commentsData.find((c) => c.id === commentId);
     if (!comment) return;
 
-    // ✅ Теперь comment.text — чистый текст, без лишних замен
     textInput.value = `> ${comment.name}: ${comment.text}`;
     textInput.focus();
     validateFields();
