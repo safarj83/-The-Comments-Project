@@ -20,9 +20,6 @@ export function getComments() {
 export function addComment({ name, text }) {
   return fetch(`${BASE_URL}/${PERSONAL_KEY}/comments`, {
     method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
     body: JSON.stringify({ name, text }),
   }).then((response) => {
     if (!response.ok) {

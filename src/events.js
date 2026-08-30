@@ -27,7 +27,6 @@ function validateFields() {
   let isValid = true;
   let errorMsg = '';
 
-  // Проверяем не только пустоту, но и длину (минимум 3 символа)
   if (!name || name.length < 3) {
     nameInput.classList.add('error');
     isValid = false;
@@ -47,7 +46,6 @@ function addComment() {
   const name = nameInput.value.trim();
   const text = textInput.value.trim();
 
-  // Добавляем проверку длины здесь тоже, чтобы вообще не отправлять запрос
   if (!name || name.length < 3 || !text || text.length < 3) {
     validateFields();
     return;
@@ -68,13 +66,11 @@ function addComment() {
       nameInput.focus();
     })
     .catch((error) => {
-      // Тут отобразится сообщение с сервера (например, "имя должно содержать хотя бы 3 символа")
       errorMessage.textContent = error.message || 'Ошибка при добавлении комментария';
     })
     .finally(() => {
       addButton.textContent = 'Написать';
       addButton.disabled = false;
-      validateFields();
     });
 }
 
