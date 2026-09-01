@@ -9,19 +9,23 @@
 
 <body>
   <div class="container">
+
+    <div id="loadingComments" class="loading">Загрузка комментариев...</div>
     <ul class="comments" id="commentsList"></ul>
-
-    <div class="add-form">
-      <input type="text" class="add-form-name" id="nameInput" placeholder="Введите ваше имя">
-      <textarea class="add-form-text" id="textInput" placeholder="Введите ваш комментарий" rows="4"></textarea>
-      <div class="add-form-row">
-        <button class="add-form-button" id="addButton">Написать</button>
+    <div id="addFormContainer">
+      <div class="add-form">
+        <input type="text" class="add-form-name" id="nameInput" placeholder="Введите ваше имя">
+        <textarea class="add-form-text" id="textInput" placeholder="Введите ваш комментарий" rows="4"></textarea>
+        <div class="add-form-row">
+          <button class="add-form-button" id="addButton">Написать</button>
+        </div>
+        <div class="error-message" id="errorMessage"></div>
       </div>
-      <div class="error-message" id="errorMessage"></div>
     </div>
-  </div>
-   <script type="module" src="src/main.js"></script>
+    <div id="addingComment" class="loading" style="display: none;">Комментарий добавляется...</div>
 
+  </div>
+  <script type="module" src="src/main.js"></script>
 </body>
 
 </html>

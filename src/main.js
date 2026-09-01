@@ -2,18 +2,22 @@ import { loadComments } from './data.js';
 import { renderComments } from './render.js';
 import { initEvents } from './events.js';
 
-async function init() {
-  try {
-    await loadComments();
-    renderComments();
-    initEvents();
-  } catch (error) {
-    console.error('Ошибка инициализации:', error);
-    const errorMessage = document.getElementById('errorMessage');
-    if (errorMessage) {
-      errorMessage.textContent = 'Не удалось загрузить комментарии. Попробуйте обновить страницу.';
-    }
-  }
+const loadingComments = document.getElementById('loadingComments');
+
+export function initApp() {
+  loadingComments.style.display = 'block';
+
+  loadComments()
+    .then(() => {
+      renderComments();
+    })
+    .catch((error) => {
+      console.error('Ошибка загрузки комментариев:', error);
+    })
+    .finally(() => {
+      loadingComments.style.display = 'none';
+    });
 }
 
-init();
+initApp();
+initEvents();

@@ -1,4 +1,4 @@
-import { commentsData, incrementId, loadComments } from './data.js';
+import { commentsData, loadComments } from './data.js';
 import { renderComments } from './render.js';
 import { getCurrentDate } from './utils.js';
 import { addComment as addCommentAPI } from './api.js';
@@ -8,6 +8,9 @@ const nameInput = document.getElementById('nameInput');
 const textInput = document.getElementById('textInput');
 const addButton = document.getElementById('addButton');
 const errorMessage = document.getElementById('errorMessage');
+
+const addFormContainer = document.getElementById('addFormContainer');
+const addingComment = document.getElementById('addingComment');
 
 let isFirstValidation = true;
 
@@ -51,8 +54,9 @@ function addComment() {
     return;
   }
 
-  addButton.textContent = 'Отправка...';
-  addButton.disabled = true;
+  addFormContainer.style.display = 'none';
+  addingComment.style.display = 'block';
+  errorMessage.textContent = '';
 
   addCommentAPI({ name, text })
     .then(() => loadComments())
@@ -69,8 +73,10 @@ function addComment() {
       errorMessage.textContent = error.message || 'Ошибка при добавлении комментария';
     })
     .finally(() => {
+      addFormContainer.style.display = 'block';
+      addingComment.style.display = 'none';
       addButton.textContent = 'Написать';
-      addButton.disabled = false;
+      addButton.disabled = false; 
     });
 }
 

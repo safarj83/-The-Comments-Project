@@ -21,12 +21,13 @@ export function addComment({ name, text }) {
   return fetch(`${BASE_URL}/${PERSONAL_KEY}/comments`, {
     method: 'POST',
     body: JSON.stringify({ name, text }),
-  }).then((response) => {
-    if (!response.ok) {
-      return response.json().then((errorData) => {
-        throw new Error(errorData.error || `Ошибка ${response.status}`);
-      });
-    }
-    return response.json();
-  });
+  })
+    .then((response) => {
+      if (!response.ok) {
+        return response.json().then((errorData) => {
+          throw new Error(errorData.error || `Ошибка ${response.status}`);
+        });
+      }
+      return response.json();
+    });
 }

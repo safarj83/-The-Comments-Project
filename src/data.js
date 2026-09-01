@@ -15,6 +15,7 @@ function transformComment(apiComment) {
   };
 }
 
+// async функция автоматически возвращает Promise, поэтому отлично работает в цепочке .then() в events.js
 export async function loadComments() {
   try {
     const apiComments = await getComments();
@@ -29,7 +30,7 @@ export async function loadComments() {
     return commentsData;
   } catch (error) {
     console.error('Ошибка загрузки комментариев:', error);
-    throw error;
+    throw error; // Пробрасываем ошибку дальше, чтобы ее поймал .catch() в events.js или main.js
   }
 }
 
