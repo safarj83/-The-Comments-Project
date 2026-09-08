@@ -4,7 +4,7 @@ import { initEvents } from './events.js';
 
 const loadingComments = document.getElementById('loadingComments');
 
-export function initApp() {
+function initApp() {
   loadingComments.style.display = 'block';
 
   loadComments()
@@ -12,7 +12,7 @@ export function initApp() {
       renderComments();
     })
     .catch((error) => {
-      console.error('Ошибка загрузки комментариев:', error);
+      alert(error.message);
     })
     .finally(() => {
       loadingComments.style.display = 'none';

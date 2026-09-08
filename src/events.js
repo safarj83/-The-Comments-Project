@@ -1,6 +1,5 @@
 import { commentsData, loadComments } from './data.js';
 import { renderComments } from './render.js';
-import { getCurrentDate } from './utils.js';
 import { addComment as addCommentAPI } from './api.js';
 
 const commentsList = document.getElementById('commentsList');
@@ -8,52 +7,20 @@ const nameInput = document.getElementById('nameInput');
 const textInput = document.getElementById('textInput');
 const addButton = document.getElementById('addButton');
 const errorMessage = document.getElementById('errorMessage');
-
 const addFormContainer = document.getElementById('addFormContainer');
 const addingComment = document.getElementById('addingComment');
-
-let isFirstValidation = true;
-
-function validateFields() {
-  const name = nameInput.value.trim();
-  const text = textInput.value.trim();
-
-  if (isFirstValidation) {
-    isFirstValidation = false;
-    addButton.disabled = true;
-    return;
-  }
-
-  nameInput.classList.remove('error');
-  textInput.classList.remove('error');
-
-  let isValid = true;
-  let errorMsg = '';
-
-  if (!name || name.length < 3) {
-    nameInput.classList.add('error');
-    isValid = false;
-    errorMsg = 'Имя должно содержать хотя бы 3 символа';
-  } else if (!text || text.length < 3) {
-    textInput.classList.add('error');
-    isValid = false;
-    errorMsg = 'Текст должен содержать хотя бы 3 символа';
-  }
-
-  errorMessage.textContent = errorMsg;
-  addButton.disabled = !isValid;
-  return isValid;
-}
 
 function addComment() {
   const name = nameInput.value.trim();
   const text = textInput.value.trim();
 
-  if (!name || name.length < 3 || !text || text.length < 3) {
-    validateFields();
-    return;
+  // По требованиям ДЗ №7: если меньше 3 символов, показываем alert и НЕ отправляем
+  if (name.length < 3 || text.length < 3) {
+    alert('Имя и комментарий должны быть не короче 3 символов');
+    return; 
   }
 
+  // Скрываем форму и показываем лоадер
   addFormContainer.style.display = 'none';
   addingComment.style.display = 'block';
   errorMessage.textContent = '';
@@ -62,6 +29,7 @@ function addComment() {
     .then(() => loadComments())
     .then(() => {
       renderComments();
+      // Очищаем поля ТОЛЬКО при успехе
       nameInput.value = '';
       textInput.value = '';
       errorMessage.textContent = '';
@@ -70,13 +38,15 @@ function addComment() {
       nameInput.focus();
     })
     .catch((error) => {
-      errorMessage.textContent = error.message || 'Ошибка при добавлении комментария';
+      // Показываем alert с текстом ошибки (400, 500, интернет)
+      alert(error.message);
+      // Текст в полях НЕ сбрасывается
     })
     .finally(() => {
       addFormContainer.style.display = 'block';
       addingComment.style.display = 'none';
       addButton.textContent = 'Написать';
-      addButton.disabled = false; 
+      addButton.disabled = false;
     });
 }
 
@@ -101,11 +71,18 @@ export function initEvents() {
 
     textInput.value = `> ${comment.name}: ${comment.text}`;
     textInput.focus();
-    validateFields();
   });
 
-  nameInput.addEventListener('input', validateFields);
-  textInput.addEventListener('input', validateFields);
+  nameInput.addEventListener('input', () => {
+    nameInput.classList.remove('error');
+    errorMessage.textContent = '';
+  });
+
+  textInput.addEventListener('input', () => {
+    textInput.classList.remove('error');
+    errorMessage.textContent = '';
+  });
+
   addButton.addEventListener('click', addComment);
 
   nameInput.addEventListener('keydown', (e) => {
@@ -121,7 +98,4 @@ export function initEvents() {
       addComment();
     }
   });
-
-  isFirstValidation = true;
-  validateFields();
 }
