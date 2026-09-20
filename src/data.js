@@ -2,7 +2,17 @@ import { getComments } from './api.js';
 import { formatDate } from './utils.js';
 
 export let commentsData = [];
-export let nextId = 1;
+
+export let user = JSON.parse(localStorage.getItem('user')) || null;
+
+export function setUser(newUser) {
+  user = newUser;
+  if (newUser) {
+    localStorage.setItem('user', JSON.stringify(newUser));
+  } else {
+    localStorage.removeItem('user');
+  }
+}
 
 function transformComment(apiComment) {
   return {
@@ -19,20 +29,9 @@ export async function loadComments() {
   try {
     const apiComments = await getComments();
     commentsData = apiComments.map(transformComment);
-    
-    if (commentsData.length > 0) {
-      nextId = Math.max(...commentsData.map((c) => c.id)) + 1;
-    } else {
-      nextId = 1;
-    }
-    
     return commentsData;
   } catch (error) {
     console.error('Ошибка загрузки комментариев:', error);
     throw error;
   }
-}
-
-export function incrementId() {
-  return nextId++;
 }

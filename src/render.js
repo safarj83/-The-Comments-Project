@@ -1,43 +1,43 @@
-import { commentsData } from './data.js';
+import { commentsData, user } from './data.js';
 
 export function renderComments() {
   const commentsList = document.getElementById('commentsList');
-  commentsList.innerHTML = '';
 
-  for (const comment of commentsData) {
-    const li = document.createElement('li');
-    li.className = 'comment';
-    li.dataset.id = comment.id;
+  commentsList.innerHTML = commentsData
+    .map((comment) => {
+      return `
+        <li class="comment" data-id="${comment.id}">
+          <div class="comment-header">
+            <div>${comment.name}</div>
+            <div>${comment.date}</div>
+          </div>
+          <div class="comment-body">
+            <div class="comment-text">${comment.text}</div>
+          </div>
+          <div class="comment-footer">
+            <div class="likes">
+              <span class="likes-counter">${comment.likes}</span>
+              <button class="like-button ${comment.isLiked ? 'active' : ''}" data-id="${comment.id}"></button>
+            </div>
+          </div>
+        </li>
+      `;
+    })
+    .join('');
+}
 
-    const header = document.createElement('div');
-    header.className = 'comment-header';
-    const nameDiv = document.createElement('div');
-    nameDiv.textContent = comment.name;
-    const dateDiv = document.createElement('div');
-    dateDiv.textContent = comment.date;
-    header.append(nameDiv, dateDiv);
+export function updateAuthUI() {
+  const authLink = document.getElementById('authLink');
+  const addFormContainer = document.getElementById('addFormContainer');
+  const nameInput = document.getElementById('nameInput');
 
-    const body = document.createElement('div');
-    body.className = 'comment-body';
-    const textDiv = document.createElement('div');
-    textDiv.className = 'comment-text';
-    textDiv.textContent = comment.text;
-    body.appendChild(textDiv);
-
-    const footer = document.createElement('div');
-    footer.className = 'comment-footer';
-    const likes = document.createElement('div');
-    likes.className = 'likes';
-    const likesCounter = document.createElement('span');
-    likesCounter.className = 'likes-counter';
-    likesCounter.textContent = comment.likes;
-    const likeButton = document.createElement('button');
-    likeButton.className = comment.isLiked ? 'like-button active' : 'like-button';
-    likeButton.dataset.id = comment.id;
-    likes.append(likesCounter, likeButton);
-    footer.appendChild(likes);
-
-    li.append(header, body, footer);
-    commentsList.appendChild(li);
+  if (user) {
+    authLink.style.display = 'none';
+    addFormContainer.style.display = 'block';
+    nameInput.value = user.name;
+  } else {
+    authLink.style.display = 'block';
+    addFormContainer.style.display = 'none';
+    nameInput.value = '';
   }
 }

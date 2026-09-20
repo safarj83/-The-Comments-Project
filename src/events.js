@@ -1,6 +1,8 @@
-import { commentsData, loadComments } from './data.js';
-import { renderComments } from './render.js';
+import { commentsData, loadComments, user, setUser } from './data.js';
+import { renderComments, updateAuthUI } from './render.js';
 import { addComment as addCommentAPI } from './api.js';
+import { renderLoginPage } from './loginPage.js';
+import { renderRegisterPage } from './registerPage.js';
 
 const commentsList = document.getElementById('commentsList');
 const nameInput = document.getElementById('nameInput');
@@ -9,52 +11,92 @@ const addButton = document.getElementById('addButton');
 const errorMessage = document.getElementById('errorMessage');
 const addFormContainer = document.getElementById('addFormContainer');
 const addingComment = document.getElementById('addingComment');
+const authLink = document.getElementById('authLink');
+const commentsPage = document.getElementById('commentsPage');
+const loginPage = document.getElementById('loginPage');
+const registerPage = document.getElementById('registerPage');
+
+function hideAllPages() {
+  commentsPage.style.display = 'none';
+  loginPage.style.display = 'none';
+  registerPage.style.display = 'none';
+  document.body.classList.add('has-modal');
+}
+
+function showCommentsPage() {
+  hideAllPages();
+  commentsPage.style.display = 'block';
+  document.body.classList.remove('has-modal');
+}
+
+function showLoginPage() {
+  hideAllPages();
+  loginPage.style.display = 'flex';
+
+  renderLoginPage({
+    onLogin: (data) => {
+      setUser(data.user);
+      showCommentsPage();
+      updateAuthUI();
+      renderComments();
+    },
+    onBack: showCommentsPage,
+    onGoToRegister: showRegisterPage,
+  });
+}
+
+function showRegisterPage() {
+  hideAllPages();
+  registerPage.style.display = 'flex';
+
+  renderRegisterPage({
+    onRegister: () => {
+      showLoginPage();
+    },
+    onGoToLogin: showLoginPage,
+  });
+}
 
 function addComment() {
-  const name = nameInput.value.trim();
   const text = textInput.value.trim();
 
-  // По требованиям ДЗ №7: если меньше 3 символов, показываем alert и НЕ отправляем
-  if (name.length < 3 || text.length < 3) {
-    alert('Имя и комментарий должны быть не короче 3 символов');
-    return; 
+  if (text.length < 3) {
+    alert('Комментарий должен быть не короче 3 символов');
+    return;
   }
 
-  // Скрываем форму и показываем лоадер
   addFormContainer.style.display = 'none';
   addingComment.style.display = 'block';
   errorMessage.textContent = '';
 
-  addCommentAPI({ name, text })
+  addCommentAPI({ text, token: user.token })
     .then(() => loadComments())
     .then(() => {
       renderComments();
-      // Очищаем поля ТОЛЬКО при успехе
-      nameInput.value = '';
       textInput.value = '';
       errorMessage.textContent = '';
-      nameInput.classList.remove('error');
-      textInput.classList.remove('error');
-      nameInput.focus();
     })
     .catch((error) => {
-      // Показываем alert с текстом ошибки (400, 500, интернет)
       alert(error.message);
-      // Текст в полях НЕ сбрасывается
     })
     .finally(() => {
       addFormContainer.style.display = 'block';
       addingComment.style.display = 'none';
-      addButton.textContent = 'Написать';
       addButton.disabled = false;
     });
+}
+
+function logout() {
+  setUser(null);
+  updateAuthUI();
+  renderComments();
 }
 
 export function initEvents() {
   commentsList.addEventListener('click', (e) => {
     const likeButton = e.target.closest('.like-button');
     if (likeButton) {
-      const commentId = parseInt(likeButton.dataset.id, 10);
+      const commentId = likeButton.dataset.id;
       const comment = commentsData.find((c) => c.id === commentId);
       if (!comment) return;
       comment.isLiked = !comment.isLiked;
@@ -65,7 +107,7 @@ export function initEvents() {
 
     const commentElement = e.target.closest('.comment');
     if (!commentElement) return;
-    const commentId = parseInt(commentElement.dataset.id, 10);
+    const commentId = commentElement.dataset.id;
     const comment = commentsData.find((c) => c.id === commentId);
     if (!comment) return;
 
@@ -73,24 +115,7 @@ export function initEvents() {
     textInput.focus();
   });
 
-  nameInput.addEventListener('input', () => {
-    nameInput.classList.remove('error');
-    errorMessage.textContent = '';
-  });
-
-  textInput.addEventListener('input', () => {
-    textInput.classList.remove('error');
-    errorMessage.textContent = '';
-  });
-
   addButton.addEventListener('click', addComment);
-
-  nameInput.addEventListener('keydown', (e) => {
-    if (e.key === 'Enter') {
-      e.preventDefault();
-      textInput.focus();
-    }
-  });
 
   textInput.addEventListener('keydown', (e) => {
     if (e.key === 'Enter' && e.ctrlKey) {
@@ -98,4 +123,16 @@ export function initEvents() {
       addComment();
     }
   });
+
+  authLink.addEventListener('click', (e) => {
+    e.preventDefault();
+    showLoginPage();
+  });
+
+  const logoutButton = document.getElementById('logoutButton');
+  if (logoutButton) {
+    logoutButton.addEventListener('click', logout);
+  }
+
+  updateAuthUI();
 }

@@ -1,5 +1,5 @@
 import { loadComments } from './data.js';
-import { renderComments } from './render.js';
+import { renderComments, updateAuthUI } from './render.js';
 import { initEvents } from './events.js';
 
 const loadingComments = document.getElementById('loadingComments');
@@ -10,6 +10,7 @@ function initApp() {
   loadComments()
     .then(() => {
       renderComments();
+      updateAuthUI();
     })
     .catch((error) => {
       alert(error.message);
@@ -19,5 +20,27 @@ function initApp() {
     });
 }
 
+function initScrollButtons() {
+  const scrollUp = document.getElementById('scrollUp');
+  const scrollDown = document.getElementById('scrollDown');
+
+  if (!scrollUp || !scrollDown) return;
+
+  scrollUp.addEventListener('click', () => {
+    window.scrollTo({
+      top: 0,
+      behavior: 'smooth',
+    });
+  });
+
+  scrollDown.addEventListener('click', () => {
+    window.scrollTo({
+      top: document.body.scrollHeight,
+      behavior: 'smooth',
+    });
+  });
+}
+
 initApp();
 initEvents();
+initScrollButtons();
