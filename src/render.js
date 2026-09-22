@@ -17,13 +17,29 @@ export function renderComments() {
           <div class="comment-footer">
             <div class="likes">
               <span class="likes-counter">${comment.likes}</span>
-              <button class="like-button ${comment.isLiked ? 'active' : ''}" data-id="${comment.id}"></button>
+              <button class="like-button ${comment.isLiked ? 'active' : ''} ${!user ? 'disabled' : ''}" data-id="${comment.id}"></button>
             </div>
           </div>
         </li>
       `;
     })
     .join('');
+}
+
+export function renderAddForm() {
+  const addFormContainer = document.getElementById('addFormContainer');
+
+  addFormContainer.innerHTML = `
+    <div class="add-form">
+      <input type="text" class="add-form-name" id="nameInput" readonly>
+      <textarea class="add-form-text" id="textInput" placeholder="Введите ваш комментарий" rows="4"></textarea>
+      <div class="add-form-row">
+        <button class="add-form-button" id="addButton">Написать</button>
+        <button class="add-form-button logout-button" id="logoutButton">Выйти</button>
+      </div>
+      <div class="error-message" id="errorMessage"></div>
+    </div>
+  `;
 }
 
 export function updateAuthUI() {

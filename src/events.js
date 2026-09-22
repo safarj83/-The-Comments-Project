@@ -1,20 +1,20 @@
 import { commentsData, loadComments, user, setUser } from './data.js';
-import { renderComments, updateAuthUI } from './render.js';
+import { renderComments, updateAuthUI, renderAddForm } from './render.js';
 import { addComment as addCommentAPI } from './api.js';
 import { renderLoginPage } from './loginPage.js';
 import { renderRegisterPage } from './registerPage.js';
 
-const commentsList = document.getElementById('commentsList');
-const nameInput = document.getElementById('nameInput');
-const textInput = document.getElementById('textInput');
-const addButton = document.getElementById('addButton');
-const errorMessage = document.getElementById('errorMessage');
-const addFormContainer = document.getElementById('addFormContainer');
-const addingComment = document.getElementById('addingComment');
-const authLink = document.getElementById('authLink');
-const commentsPage = document.getElementById('commentsPage');
-const loginPage = document.getElementById('loginPage');
-const registerPage = document.getElementById('registerPage');
+let commentsList;
+let nameInput;
+let textInput;
+let addButton;
+let errorMessage;
+let addFormContainer;
+let addingComment;
+let authLink;
+let commentsPage;
+let loginPage;
+let registerPage;
 
 function hideAllPages() {
   commentsPage.style.display = 'none';
@@ -93,9 +93,28 @@ function logout() {
 }
 
 export function initEvents() {
+  renderAddForm();
+
+  commentsList = document.getElementById('commentsList');
+  nameInput = document.getElementById('nameInput');
+  textInput = document.getElementById('textInput');
+  addButton = document.getElementById('addButton');
+  errorMessage = document.getElementById('errorMessage');
+  addFormContainer = document.getElementById('addFormContainer');
+  addingComment = document.getElementById('addingComment');
+  authLink = document.getElementById('authLink');
+  commentsPage = document.getElementById('commentsPage');
+  loginPage = document.getElementById('loginPage');
+  registerPage = document.getElementById('registerPage');
+
   commentsList.addEventListener('click', (e) => {
     const likeButton = e.target.closest('.like-button');
     if (likeButton) {
+      if (!user) {
+        alert('Чтобы поставить лайк, авторизуйтесь');
+        return;
+      }
+
       const commentId = likeButton.dataset.id;
       const comment = commentsData.find((c) => c.id === commentId);
       if (!comment) return;

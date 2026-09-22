@@ -372,3 +372,12 @@ body.has-modal .scroll-buttons {
     bottom: 16px;
   }
 }
+
+.like-button.disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.like-button.disabled:hover {
+  transform: none;
+}
