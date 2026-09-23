@@ -1,5 +1,5 @@
 import { commentsData, loadComments, user, setUser } from './data.js';
-import { renderComments, updateAuthUI, renderAddForm } from './render.js';
+import { renderComments, updateAuthUI } from './render.js';
 import { addComment as addCommentAPI } from './api.js';
 import { renderLoginPage } from './loginPage.js';
 import { renderRegisterPage } from './registerPage.js';
@@ -93,8 +93,6 @@ function logout() {
 }
 
 export function initEvents() {
-  renderAddForm();
-
   commentsList = document.getElementById('commentsList');
   nameInput = document.getElementById('nameInput');
   textInput = document.getElementById('textInput');

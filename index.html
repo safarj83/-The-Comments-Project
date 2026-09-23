@@ -2,47 +2,13 @@
 <html lang="ru">
 
 <head>
-  <title>Проект "Комменты"</title>
   <meta charset="utf-8">
+  <title>Проект "Комменты"</title>
   <link rel="stylesheet" href="./css/styles.css">
 </head>
 
 <body>
-  <div class="container">
-
-    <div id="loginPage" class="login-page" style="display: none;"></div>
-
-    <div id="registerPage" class="register-page" style="display: none;"></div>
-
-    <div id="commentsPage" class="comments-page">
-      <div id="loadingComments" class="loading">Загрузка комментариев...</div>
-
-      <ul class="comments" id="commentsList"></ul>
-
-      <div id="authLink" class="auth-link">
-        <a href="#" id="goToLogin">Чтобы добавить комментарий, авторизуйтесь</a>
-      </div>
-
-      <div id="addFormContainer" style="display: none;"></div>
-
-      <div id="addingComment" class="loading" style="display: none;">Комментарий добавляется...</div>
-    </div>
-
-  </div>
-
-  <div class="scroll-buttons">
-    <button class="scroll-btn" id="scrollUp" aria-label="Вверх">
-      <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M6 15L12 9L18 15" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
-      </svg>
-    </button>
-    <button class="scroll-btn" id="scrollDown" aria-label="Вниз">
-      <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M6 9L12 15L18 9" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
-      </svg>
-    </button>
-  </div>
-
+  <div id="app"></div>
   <script type="module" src="src/main.js"></script>
 </body>
 
